@@ -1,0 +1,55 @@
+#!/bin/bash +x
+
+INTERACTIVE=""
+FORCE_DELETE=""
+MASTER="master"
+while [[ $# -gt 0 ]]
+do
+  key="$1"
+  case $key in
+    -f)
+    FORCE_DELETE="y"
+    shift
+    ;;
+    -i)
+    INTERACTIVE="i"
+    shift
+    ;;
+    -fi|-if)
+    INTERACTIVE="i"
+    FORCE_DELETE="y"
+    shift
+    ;;
+    -h)
+    echo "$0 -i -> for intecative deletion of local branches"
+    echo "$0 -f -> force delete a branch"
+    echo "$0 -> to see local branches"
+    exit
+    ;;
+    *)
+    shift
+  esac
+done
+
+for brnch in $(git branch | sed /\*/d); do
+  created_commit_id=$(git merge-base ${brnch} ${MASTER})
+  created_date=$(git log --pretty=format:"%ad" --date=short -n 1 ${created_commit_id})
+  created_ago=$(git log --pretty=format:"%cr" --date=short -n 1 ${created_commit_id})
+  last_updated_date=$(git log --pretty=format:"%ad" --date=short -n 1 ${brnch})
+  updated_before=$(git log --pretty=format:"%cr" --date=short -n 1 ${brnch})
+  echo "Branch: ${brnch} was created on ${created_date}(${created_ago}) and was last updated on ${last_updated_date}(${created_ago})"
+  if [ "${INTERACTIVE}" == "i" ]; then
+    echo -n "Type y to delete the branch, followed by [ENTER]:"
+    read ip
+    if [ "$ip" == "y" ]; then
+      if [ "${FORCE_DELETE}" == "y" ]; then
+        git branch -D ${brnch}
+      else
+        git branch -d ${brnch}
+        if [ $? -ne 0 ]; then
+          echo "Run with -fi command to delete ${brnch}"
+        fi
+      fi
+    fi
+  fi
+done
