@@ -44,7 +44,11 @@ for brnch in $(git branch | sed /\*/d); do
   created_ago=$(git log --pretty=format:"%cr" --date=short -n 1 ${created_commit_id})
   last_updated_date=$(git log --pretty=format:"%ad" --date=short -n 1 ${brnch})
   updated_before=$(git log --pretty=format:"%cr" --date=short -n 1 ${brnch})
-  printf "Branch: ${brnch} was created on ${created_date}${RED}(${created_ago})${NC} and was last updated on ${last_updated_date}${RED}(${updated_before}${NC})\n"
+  commit_message_subject=$(git log --pretty=format:'%s' -n 1 ${brnch})
+  printf "Branch name         : ${brnch} \n"
+  printf "Created on          : ${created_date}${RED}(${created_ago})${NC}\n"
+  printf "Last updated on     : ${last_updated_date}${RED}(${updated_before}${NC})\n"
+  printf "Last commit message : ${commit_message_subject}\n"
   if [ "${INTERACTIVE}" == "i" ]; then
     printf "${LIGHT_BLUE}Delete the branch, followed by [y/n]?${NC} "
     read ip
