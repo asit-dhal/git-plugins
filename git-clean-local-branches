@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# Copyright(c) 2018 Asit Dhal.
+# Distributed under the MIT License (http://opensource.org/licenses/MIT)
+#
 
 LIGHT_BLUE='\033[1;34m'
 RED='\033[0;31m'
