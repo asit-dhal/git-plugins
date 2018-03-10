@@ -1,5 +1,8 @@
-#!/bin/bash +x
+#!/bin/bash
 
+LIGHT_BLUE='\033[1;34m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
 INTERACTIVE=""
 FORCE_DELETE=""
 MASTER="master"
@@ -21,9 +24,9 @@ do
     shift
     ;;
     -h)
-    echo "$0 -i -> for intecative deletion of local branches"
-    echo "$0 -f -> force delete a branch"
-    echo "$0 -> to see local branches"
+    echo "$(basename $0) -i Intecative deletion of local branches"
+    echo "$(basename $0) -f Force delete the branch(es)"
+    echo "$(basename $0)    List local branches with creation and last update date"
     exit
     ;;
     *)
@@ -37,9 +40,9 @@ for brnch in $(git branch | sed /\*/d); do
   created_ago=$(git log --pretty=format:"%cr" --date=short -n 1 ${created_commit_id})
   last_updated_date=$(git log --pretty=format:"%ad" --date=short -n 1 ${brnch})
   updated_before=$(git log --pretty=format:"%cr" --date=short -n 1 ${brnch})
-  echo "Branch: ${brnch} was created on ${created_date}(${created_ago}) and was last updated on ${last_updated_date}(${created_ago})"
+  printf "Branch: ${brnch} was created on ${created_date}${RED}(${created_ago})${NC} and was last updated on ${last_updated_date}${RED}(${updated_before}${NC})\n"
   if [ "${INTERACTIVE}" == "i" ]; then
-    echo -n "Type y to delete the branch, followed by [ENTER]:"
+    printf "${LIGHT_BLUE}Delete the branch, followed by [y/n]?${NC} "
     read ip
     if [ "$ip" == "y" ]; then
       if [ "${FORCE_DELETE}" == "y" ]; then
@@ -47,7 +50,7 @@ for brnch in $(git branch | sed /\*/d); do
       else
         git branch -d ${brnch}
         if [ $? -ne 0 ]; then
-          echo "Run with -fi command to delete ${brnch}"
+          printf "${LIGHT_BLUE}Run with -fi command to delete ${brnch}${NC}\n"
         fi
       fi
     fi
