@@ -38,6 +38,28 @@ do
   esac
 done
 
+current_branch=$(git branch | grep "*")
+current_branch=${current_branch/* /}
+
+if [ "${current_branch}" != "${MASTER}" ]; then
+  printf "Please change the current branch to ${LIGHT_BLUE}${MASTER}${NC}\n"
+  exit
+fi
+
+if ! git diff-files --quiet; then 
+  printf "you have unstaged changes. $(basename $0) needs a clean working index\n"
+  git diff-files --name-status
+  printf "Please commit or stash them.\n"
+  exit
+fi
+
+if ! git diff-index --cached --quiet HEAD; then
+  printf "your index contains uncommitted changes. $(basename $0) needs a clean working index\n"
+  git diff-index --cached --name-status HEAD
+  printf "Please commit or stash them.\n"
+  exit  
+fi
+
 for brnch in $(git branch | sed /\*/d); do
   created_commit_id=$(git merge-base ${brnch} ${MASTER})
   created_date=$(git log --pretty=format:"%ad" --date=short -n 1 ${created_commit_id})
