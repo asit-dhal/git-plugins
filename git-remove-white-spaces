@@ -1,0 +1,11 @@
+#!/bin/bash
+
+IFS="
+"
+
+for line in `git diff --check | sed '/^[+-]/d'`; do
+	file="`echo $line | sed -r 's/:[0-9]+: .*//'`"
+	line_number="`echo $line | sed -r 's/.*:([0-9]+).*/\1/'`"
+	sed -i "${line_number}s/[[:space:]]*$//" "$file"
+	echo -e "Removed trailing whitespace in \033[31m$file\033[0m:$line_number"
+done
