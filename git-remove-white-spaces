@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## original writer: https://makandracards.com/makandra/11541-how-to-not-leave-trailing-whitespace-using-your-editor-or-git
+
 IFS="
 "
 
